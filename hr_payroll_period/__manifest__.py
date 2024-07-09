@@ -4,7 +4,7 @@
 
 {
     "name": "HR Payroll Period",
-    "version": "15.0.1.0.1",
+    "version": "15.0.1.1.0",
     "license": "AGPL-3",
     "category": "Payroll",
     "summary": "Add payroll periods",
@@ -19,6 +19,7 @@
         "security/hr_period_security.xml",
         "data/ir_sequence_data.xml",
         "data/date_range_type.xml",
+        "data/ir_cron.xml",
         "views/menus.xml",
         "views/date_range_type_view.xml",
         "views/hr_period_view.xml",
