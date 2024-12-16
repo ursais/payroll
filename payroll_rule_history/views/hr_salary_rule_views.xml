@@ -1,0 +1,34 @@
+<odoo>
+    <record model="ir.ui.view" id="hr_salary_rule_history_view">
+        <field name="model">hr.salary.rule</field>
+        <field name="inherit_id" ref="payroll.hr_salary_rule_view_tree_children" />
+        <field name="arch" type="xml">
+            <field name="category_id" position="after">
+                <field name="date_start" />
+                <field name="date_end" />
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hr_salary_rule_view_form">
+        <field name="model">hr.salary.rule</field>
+        <field name="inherit_id" ref="payroll.hr_salary_rule_view_form" />
+        <field name="arch" type="xml">
+            <field name="active" position="before">
+                <field name="date_start" />
+                <field name="date_end" />
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="hr_payroll_structure_view_form">
+        <field name="model">hr.payroll.structure</field>
+        <field name="inherit_id" ref="payroll.hr_payroll_structure_view_form" />
+        <field name="arch" type="xml">
+            <field name="sequence" position="after">
+                <field name="date_start" />
+                <field name="date_end" />
+            </field>
+        </field>
+    </record>
+</odoo>
