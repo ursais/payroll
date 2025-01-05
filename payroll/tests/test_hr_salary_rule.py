@@ -243,5 +243,5 @@ class TestSalaryRule(TestPayslipBase):
             }
         )
         payslip.compute_sheet()
-        line = payslip.line_ids.filtered(lambda l: l.name == "Total fixed values")
+        line = payslip.line_ids.filtered(lambda x: x.name == "Total fixed values")
         self.assertEqual(line.total, 300, "Fixed rules: 100 + 200 = 300")
