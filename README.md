@@ -22,6 +22,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [payroll](payroll/) | 17.0.1.0.0 | [![appstogrow](https://github.com/appstogrow.png?size=30px)](https://github.com/appstogrow) [![nimarosa](https://github.com/nimarosa.png?size=30px)](https://github.com/nimarosa) | Manage your employee payroll records
+[payroll_hr_public_holidays](payroll_hr_public_holidays/) | 17.0.1.0.0 | [![nimarosa](https://github.com/nimarosa.png?size=30px)](https://github.com/nimarosa) | Integration between payroll and hr_public_holidays
 
 [//]: # (end addons)
 
