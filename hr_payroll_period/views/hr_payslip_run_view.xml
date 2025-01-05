@@ -13,14 +13,28 @@
                     groups="base.group_multi_company"
                     required="1"
                 />
+                <field
+                    name="company_id"
+                    groups="!base.group_multi_company"
+                    required="1"
+                    invisible="1"
+                />
             </field>
             <label for="date_start" position="before">
                 <field
                     name="hr_period_id"
                     domain="[
-                                ('state', '=', 'open'),
-                                ('company_id', '=', company_id),
-                            ]"
+                        ('state', '=', 'open'),
+                    ]"
+                    groups="!base.group_multi_company"
+                />
+                <field
+                    name="hr_period_id"
+                    domain="[
+                        ('state', '=', 'open'),
+                        ('company_id', '=', company_id)
+                    ]"
+                    groups="base.group_multi_company"
                 />
                 <field name="schedule_pay" />
                 <field name="date_payment" required="1" />

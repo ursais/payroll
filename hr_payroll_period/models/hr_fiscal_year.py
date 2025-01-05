@@ -199,7 +199,7 @@ class HrFiscalYear(models.Model):
         for fy in self:
             for period in fy.period_ids:
                 period.unlink()
-            fy.refresh()
+            fy.invalidate_recordset()
         if self.date_start > self.date_end:
             raise UserError(
                 _(
