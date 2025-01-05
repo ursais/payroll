@@ -11,8 +11,16 @@
                     name="hr_period_id"
                     domain="[
                         ('state', '=', 'open'),
+                    ]"
+                    groups="!base.group_multi_company"
+                />
+                <field
+                    name="hr_period_id"
+                    domain="[
+                        ('state', '=', 'open'),
                         ('company_id', '=', company_id)
                     ]"
+                    groups="base.group_multi_company"
                 />
             </field>
             <field name="name" position="after">
