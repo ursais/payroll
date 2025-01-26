@@ -10,7 +10,16 @@ class HrPayslip(models.Model):
     _inherit = "hr.payslip"
 
     hr_period_id = fields.Many2one("hr.period", string="Period")
-    date_payment = fields.Date("Date of Payment")
+    date_payment = fields.Date(
+        "Date of Payment",
+        related="payslip_run_id.date_payment",
+        store=True,
+        readonly=False,
+    )
+    date_from = fields.Date(
+        related="payslip_run_id.date_start", store=True, readonly=False
+    )
+    date_to = fields.Date(related="payslip_run_id.date_end", store=True, readonly=False)
 
     @api.constrains("hr_period_id", "company_id")
     def _check_period_company(self):
@@ -52,23 +61,3 @@ class HrPayslip(models.Model):
             )
             if period:
                 self.hr_period_id = period.id if period else False
-
-    @api.onchange("hr_period_id")
-    def onchange_hr_period_id(self):
-        if self.hr_period_id:
-            # dates must be updated together to prevent constraint
-            self.date_from = self.hr_period_id.date_start
-            self.date_to = self.hr_period_id.date_end
-            self.date_payment = self.hr_period_id.date_payment
-
-    @api.model
-    def create(self, vals):
-        if vals.get("payslip_run_id"):
-            payslip_run = self.env["hr.payslip.run"].browse(vals["payslip_run_id"])
-            self.env["hr.employee"].browse(vals["employee_id"])
-            period = payslip_run.hr_period_id
-            vals["date_payment"] = payslip_run.date_payment
-            vals["hr_period_id"] = period.id
-        elif vals.get("date_to") and not vals.get("date_payment"):
-            vals["date_payment"] = vals["date_to"]
-        return super().create(vals)

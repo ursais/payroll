@@ -12,9 +12,9 @@
                     name="hr_period_id"
                     domain="[
                         ('state', '=', 'open'),
-                        ('company_id', '=', company_i)
+                        ('company_id', '=', company_id)
                     ]"
-                    reaonly="state == 'close'"
+                    readonly="state == 'close'"
                 />
                 <field name="schedule_pay" readonly="state == 'close'" />
                 <field name="date_payment" required="1" readonly="state == 'close'" />
@@ -59,7 +59,7 @@
     </record>
     <!-- Tree -->
     <record id="hr_payslip_run_tree" model="ir.ui.view">
-        <field name="name">hr.payslip.run.period.tree</field>
+        <field name="name">hr.payslip.run.period.list</field>
         <field name="model">hr.payslip.run</field>
         <field name="inherit_id" ref="payroll.hr_payslip_run_view_tree" />
         <field name="arch" type="xml">

@@ -5,8 +5,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from .hr_fiscal_year import get_schedules
-
 
 class HrPayslipRun(models.Model):
     _inherit = "hr.payslip.run"
@@ -15,8 +13,20 @@ class HrPayslipRun(models.Model):
         default=lambda obj: obj.env["ir.sequence"].next_by_code("hr.payslip.run"),
     )
     hr_period_id = fields.Many2one("hr.period", string="Period")
-    date_payment = fields.Date("Date of Payment")
-    schedule_pay = fields.Selection(get_schedules)
+    date_payment = fields.Date(
+        "Date of Payment",
+        related="hr_period_id.date_payment",
+        store=True,
+    )
+    date_from = fields.Date(
+        related="hr_period_id.date_start", store=True, readonly=False
+    )
+    date_to = fields.Date(related="hr_period_id.date_end", store=True, readonly=False)
+    schedule_pay = fields.Selection(
+        related="hr_period_id.schedule_pay",
+        store=True,
+        readonly=False,
+    )
 
     @api.constrains("hr_period_id", "company_id")
     def _check_period_company(self):
@@ -63,24 +73,6 @@ class HrPayslipRun(models.Model):
                 schedule_pay,
             )
             self.hr_period_id = (period.id if period else False,)
-
-    @api.onchange("hr_period_id")
-    def onchange_period_id(self):
-        period = self.hr_period_id
-        if period:
-            self.date_start = period.date_start
-            self.date_end = period.date_end
-            self.date_payment = period.date_payment
-            self.schedule_pay = period.schedule_pay
-
-    @api.model
-    def create(self, vals):
-        """
-        Keep compatibility between modules
-        """
-        if vals.get("date_end") and not vals.get("date_payment"):
-            vals.update({"date_payment": vals["date_end"]})
-        return super().create(vals)
 
     def get_payslip_employees_wizard(self):
         """Replace the static action used to call the wizard"""

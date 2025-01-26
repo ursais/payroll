@@ -23,7 +23,7 @@
     </record>
     <!-- Tree -->
     <record id="view_hr_payslip_tree" model="ir.ui.view">
-        <field name="name">hr.payslip.period.tree</field>
+        <field name="name">hr.payslip.period.list</field>
         <field name="model">hr.payslip</field>
         <field name="inherit_id" ref="payroll.hr_payslip_view_tree" />
         <field name="arch" type="xml">
