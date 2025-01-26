@@ -241,7 +241,6 @@ class TestHrFiscalyear(common.TransactionCase):
         self.check_period(periods[51], "2015-12-24", "2015-12-30", "2016-01-03")
 
     def test_create_periods_weekly_payment_same_week(self):
-
         fy = self.create_fiscal_year(
             {
                 "schedule_pay": "weekly",

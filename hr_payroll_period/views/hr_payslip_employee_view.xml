@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="view_hr_payslip_by_employees" model="ir.ui.view">
         <field name="name">hr_payroll_payslip_employees</field>
         <field name="model">hr.payslip.employees</field>
@@ -25,5 +24,4 @@
             </field>
         </field>
     </record>
-
 </odoo>

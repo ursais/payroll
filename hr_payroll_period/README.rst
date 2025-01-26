@@ -17,27 +17,27 @@ HR Payroll Period
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fpayroll-lightgray.png?logo=github
-    :target: https://github.com/OCA/payroll/tree/16.0/hr_payroll_period
+    :target: https://github.com/OCA/payroll/tree/18.0/hr_payroll_period
     :alt: OCA/payroll
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/payroll-16-0/payroll-16-0-hr_payroll_period
+    :target: https://translation.odoo-community.org/projects/payroll-18-0/payroll-18-0-hr_payroll_period
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/payroll&target_branch=16.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/payroll&target_branch=18.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
 Adds the concept of period in the human resources management.
 
-The objective of the module is to create periods of time to
-be used in the human resources management flows such as
-specific payroll period of time or timesheet periods.
+The objective of the module is to create periods of time to be used in
+the human resources management flows such as specific payroll period of
+time or timesheet periods.
 
-Regarding to payrolls, it adds the date of payment on the
-payslip and payslip batch. This date is automatically filled
-when selecting a period. It also adds a sequence on the payslip
-batch name and the company on the payslip batch.
+Regarding to payrolls, it adds the date of payment on the payslip and
+payslip batch. This date is automatically filled when selecting a
+period. It also adds a sequence on the payslip batch name and the
+company on the payslip batch.
 
 **Table of contents**
 
@@ -53,51 +53,56 @@ Configuration
 =============
 
 Create a fiscal year
-~~~~~~~~~~~~~~~~~~~~
+--------------------
+
 Go to: Payroll -> Configuration -> Payroll Fiscal Year
 
- - Select a type of schedule, e.g. monthly
- - Select a duration, e.g. from 2015-01-01 to 2015-12-31
- - Select when the payment is done, e.g. the second day of the next period
- - Click on create periods, then confirm
+   -  Select a type of schedule, e.g. monthly
+   -  Select a duration, e.g. from 2015-01-01 to 2015-12-31
+   -  Select when the payment is done, e.g. the second day of the next
+      period
+   -  Click on create periods, then confirm
 
 The first period of the year is now open and ready to be used.
 
-Some companies have employees paid at different types of schedule.
-In that case, you need to create as many fiscal years as types of schedule
+Some companies have employees paid at different types of schedule. In
+that case, you need to create as many fiscal years as types of schedule
 required. The same applies in a multi-company configuration.
 
 Usage
 =====
 
 Create a payslip batch
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
+
 Go to: Human Resources -> Payroll -> Payslip Batches
 
-The first period of the fiscal year is already selected.
-You may change it if you manage multiple types of schedules.
+The first period of the fiscal year is already selected. You may change
+it if you manage multiple types of schedules.
 
- - Click on Generate Payslips
+   -  Click on Generate Payslips
 
-The employees paid with the selected schedule are automatically selected.
+The employees paid with the selected schedule are automatically
+selected.
 
- - Click on Generate
-
- - Confirm your payslips
-
- - Click on Close
+   -  Click on Generate
+   -  Confirm your payslips
+   -  Click on Close
 
 The payroll period is closed automatically and the next one is open.
 
 Known issues / Roadmap
 ======================
 
-#. Currently it is not possible to close the HR fiscal year before the end of
-   the end of the last period. When implementing this feature, contracts and
-   opened payslips should be updated with the new period assigned.
-#. It is not possible to use the date_range module in server tools to generate
-   semi-monthly periods so those periods are generated as in previous versions.
-#. The date_range module does not allow to create a period for just one day.
+1. Currently it is not possible to close the HR fiscal year before the
+   end of the end of the last period. When implementing this feature,
+   contracts and opened payslips should be updated with the new period
+   assigned.
+2. It is not possible to use the date_range module in server tools to
+   generate semi-monthly periods so those periods are generated as in
+   previous versions.
+3. The date_range module does not allow to create a period for just one
+   day.
 
 Bug Tracker
 ===========
@@ -105,7 +110,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/payroll/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/payroll/issues/new?body=module:%20hr_payroll_period%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/payroll/issues/new?body=module:%20hr_payroll_period%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -113,24 +118,24 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Savoir-faire Linux
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* David Dufresne <david.dufresne@savoirfairelinux.com>
-* Maxime Chambreuil <maxime.chambreuil@savoirfairelinux.com>
-* Pierre Lamarche <pierre.lamarche@savoirfairelinux.com>
-* Salton Massally <smassally@idtlabs.sl>
-* Guewen Baconnier <guewen.baconnier@camptocamp.com>
-* Jordi Ballester Alomar <jordi.ballester@eficent.com>
-* Serpent Consulting Services Pvt. Ltd. <support@serpentcs.com>
-* Aaron Henriquez <aheficent@eficent.com>
+-  David Dufresne <david.dufresne@savoirfairelinux.com>
+-  Maxime Chambreuil <maxime.chambreuil@savoirfairelinux.com>
+-  Pierre Lamarche <pierre.lamarche@savoirfairelinux.com>
+-  Salton Massally <smassally@idtlabs.sl>
+-  Guewen Baconnier <guewen.baconnier@camptocamp.com>
+-  Jordi Ballester Alomar <jordi.ballester@eficent.com>
+-  Serpent Consulting Services Pvt. Ltd. <support@serpentcs.com>
+-  Aaron Henriquez <aheficent@eficent.com>
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
@@ -150,6 +155,6 @@ Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-nimarosa| 
 
-This module is part of the `OCA/payroll <https://github.com/OCA/payroll/tree/16.0/hr_payroll_period>`_ project on GitHub.
+This module is part of the `OCA/payroll <https://github.com/OCA/payroll/tree/18.0/hr_payroll_period>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.

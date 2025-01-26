@@ -39,10 +39,10 @@
                             <label for="date_start" string="Duration" />
                             <div>
                                 <field
-                                    name="date_start"
-                                    nolabel="1"
-                                    class="oe_inline"
-                                /> -
+                                name="date_start"
+                                nolabel="1"
+                                class="oe_inline"
+                            /> -
                                 <field name="date_end" nolabel="1" class="oe_inline" />
                             </div>
                             <field name="date_payment" />

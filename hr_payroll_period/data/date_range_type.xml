@@ -2,7 +2,6 @@
 <!-- Copyright 2017 ACSONE SA/NV
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo noupdate="1">
-
     <record model="date.range.type" id="date_range_hr_fiscal_year">
         <field name="name">HR Fiscal Year</field>
         <field name="allow_overlap" eval="False" />
@@ -14,5 +13,4 @@
         <field name="allow_overlap" eval="False" />
         <field name="hr_period" eval="True" />
     </record>
-
 </odoo>

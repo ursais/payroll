@@ -6,7 +6,6 @@ from odoo import fields, models
 
 
 class DateRangeType(models.Model):
-
     _inherit = "date.range.type"
 
     hr_period = fields.Boolean(string="Is HR period?")

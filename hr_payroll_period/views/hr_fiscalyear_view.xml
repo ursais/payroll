@@ -42,18 +42,18 @@
                             <label for="date_start" string="Period" />
                             <div>
                                 <field
-                                    name="date_start"
-                                    widget="daterange"
-                                    class="oe_inline"
-                                    options="{'related_end_date': 'date_end'}"
-                                />
+                                name="date_start"
+                                widget="daterange"
+                                class="oe_inline"
+                                options="{'related_end_date': 'date_end'}"
+                            />
                                 -
                                 <field
-                                    name="date_end"
-                                    widget="daterange"
-                                    class="oe_inline"
-                                    options="{'related_start_date': 'date_start'}"
-                                />
+                                name="date_end"
+                                widget="daterange"
+                                class="oe_inline"
+                                options="{'related_start_date': 'date_start'}"
+                            />
                             </div>
                         </group>
                         <group>
@@ -61,7 +61,10 @@
                                 name="company_id"
                                 groups="base.group_multi_company"
                             />
-                        <field name="type_id" domain="[('hr_fiscal_year','=',True)]" />
+                            <field
+                                name="type_id"
+                                domain="[('hr_fiscal_year','=',True)]"
+                            />
                         </group>
                         <group>
                             <field
