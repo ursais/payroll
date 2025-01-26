@@ -22,6 +22,14 @@
                     domain="[('state','=','close')]"
                     help="Done Payslip Batches"
                 />
+                <group name="group_by" string="Group By...">
+                    <filter
+                        string="Company"
+                        name="company_id"
+                        groups="base.group_multi_company"
+                        context="{'group_by':'company_id'}"
+                    />
+                </group>
             </search>
         </field>
     </record>
@@ -146,6 +154,7 @@
                             </div>
                             <field
                                 name="company_id"
+                                readonly="state != 'draft'"
                                 groups="base.group_multi_company"
                             />
                         </group>

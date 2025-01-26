@@ -11,7 +11,7 @@ class HrPayslipRun(models.Model):
     _description = "Payslip Batches"
     _order = "id desc"
 
-    name = fields.Char(required=True, readonly=True)
+    name = fields.Char(required=True)
     slip_ids = fields.One2many(
         "hr.payslip",
         "payslip_run_id",
