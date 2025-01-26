@@ -80,9 +80,7 @@ class HrFiscalYear(models.Model):
         )
         return period_type
 
-    period_ids = fields.One2many(
-        "hr.period", "fiscalyear_id", "Periods", states={"draft": [("readonly", False)]}
-    )
+    period_ids = fields.One2many("hr.period", "fiscalyear_id", "Periods")
     state = fields.Selection(
         [
             ("draft", "Draft"),
@@ -95,7 +93,6 @@ class HrFiscalYear(models.Model):
     schedule_pay = fields.Selection(
         get_schedules,
         required=True,
-        states={"draft": [("readonly", False)]},
         default="monthly",
     )
     type_id = fields.Many2one(
@@ -112,7 +109,6 @@ class HrFiscalYear(models.Model):
             ("6", "Saturday"),
         ],
         "Weekday of Payment",
-        states={"draft": [("readonly", False)]},
     )
     payment_week = fields.Selection(
         [
@@ -121,11 +117,8 @@ class HrFiscalYear(models.Model):
             ("2", "Second Following Week"),
         ],
         "Week of Payment",
-        states={"draft": [("readonly", False)]},
     )
-    payment_day = fields.Selection(
-        get_payment_days, "Day of Payment", states={"draft": [("readonly", False)]}
-    )
+    payment_day = fields.Selection(get_payment_days, "Day of Payment")
 
     def _count_range_no(self):
         days_range = (
@@ -146,10 +139,7 @@ class HrFiscalYear(models.Model):
             schedule_name = next(
                 (s[1] for s in get_schedules(self) if s[0] == self.schedule_pay), False
             )
-            self.name = "%(year)s - %(schedule)s" % {
-                "year": year,
-                "schedule": schedule_name,
-            }
+            self.name = f"{year} - {schedule_name}"
 
     def get_generator_vals(self):
         self.ensure_one()
@@ -338,11 +328,7 @@ class HrFiscalYear(models.Model):
 
         fiscal_year = self.create(
             {
-                "name": "%(year)s - %(schedule)s"
-                % {
-                    "year": next_year,
-                    "schedule": schedule_name,
-                },
+                "name": f"{next_year} - {schedule_name}",
                 "date_start": fiscal_year_start,
                 "date_end": fiscal_year_end,
                 "schedule_pay": schedule_pay,

@@ -25,16 +25,13 @@ class HrPeriod(models.Model):
         )
         return period_type
 
-    name = fields.Char(required=True, states={"draft": [("readonly", False)]})
-    number = fields.Integer(required=True, states={"draft": [("readonly", False)]})
-    date_payment = fields.Date(
-        "Date of Payment", required=True, states={"draft": [("readonly", False)]}
-    )
+    name = fields.Char(required=True)
+    number = fields.Integer(required=True)
+    date_payment = fields.Date("Date of Payment", required=True)
     fiscalyear_id = fields.Many2one(
         "hr.fiscalyear",
         "Fiscal Year",
         required=True,
-        states={"draft": [("readonly", False)]},
         ondelete="cascade",
     )
     state = fields.Selection(
@@ -48,13 +45,10 @@ class HrPeriod(models.Model):
         string="Company",
         store=True,
         related="fiscalyear_id.company_id",
-        readonly=True,
-        states={"draft": [("readonly", False)]},
     )
     schedule_pay = fields.Selection(
         get_schedules,
         required=True,
-        states={"draft": [("readonly", False)]},
         default="monthly",
     )
     payslip_ids = fields.One2many(

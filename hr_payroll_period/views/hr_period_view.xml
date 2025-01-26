@@ -11,19 +11,19 @@
                         name="button_open"
                         string="Open Period"
                         type="object"
-                        states="draft"
+                        invisible="state != 'draft'"
                     />
                     <button
                         name="button_re_open"
                         string="Re-Open Period"
                         type="object"
-                        states="done"
+                        invisible="state != 'done'"
                     />
                     <button
                         name="button_close"
                         string="Close Period"
                         type="object"
-                        states="open"
+                        invisible="state != 'open'"
                     />
                     <field
                         name="state"
@@ -32,7 +32,7 @@
                     />
                 </header>
                 <sheet>
-                    <group>
+                    <group readonly="state != 'draft'">
                         <group>
                             <field name="name" />
                             <field name="fiscalyear_id" widget="selection" />

@@ -11,7 +11,7 @@ from odoo.tests import common
 
 class TestHrFiscalyear(common.TransactionCase):
     def setUp(self):
-        super(TestHrFiscalyear, self).setUp()
+        super().setUp()
         self.user_model = self.env["res.users"]
         self.company_model = self.env["res.company"]
         self.payslip_model = self.env["hr.payslip"]

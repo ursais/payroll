@@ -8,7 +8,7 @@
     "license": "AGPL-3",
     "category": "Payroll",
     "summary": "Add payroll periods",
-    "author": "Savoir-faire Linux, " "Odoo Community Association (OCA)",
+    "author": "Savoir-faire Linux, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/payroll",
     "depends": [
         "payroll",

@@ -9,7 +9,7 @@ from . import test_hr_fiscalyear
 
 class PayslipCase(test_hr_fiscalyear.TestHrFiscalyear):
     def setUp(self):
-        result = super(PayslipCase, self).setUp()
+        result = super().setUp()
         self.payslip_obj = self.env["hr.payslip"]
         self.run_obj = self.env["hr.payslip.run"]
         self.wzd_obj = self.env["hr.payslip.employees"]

@@ -12,20 +12,20 @@
                         string="Create Periods"
                         type="object"
                         class="btn-primary"
-                        states="draft"
+                        invisible="state != 'draft'"
                     />
                     <button
                         name="button_set_to_draft"
                         string="Set To Draft"
                         type="object"
-                        states="open"
+                        invisible="state != 'open'"
                     />
                     <button
                         name="button_confirm"
                         string="Confirm"
                         type="object"
                         class="btn-primary"
-                        states="draft"
+                        invisible="state != 'open'"
                     />
                     <field name="state" widget="statusbar" nolabel="1" />
                 </header>
@@ -38,7 +38,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="schedule_pay" />
+                            <field name="schedule_pay" readonly="state != 'draft'" />
                             <label for="date_start" string="Period" />
                             <div>
                                 <field
@@ -69,29 +69,31 @@
                         <group>
                             <field
                                 name="payment_day"
-                                attrs="{
-                                'invisible': [('schedule_pay', 'in', ['weekly', 'bi-weekly'])],
-                                'required': [('schedule_pay', 'not in', ['weekly', 'bi-weekly'])],
-                            }"
+                                invisible="schedule_pay in ['weekly', 'bi-weekly']"
+                                required="schedule_pay not in ['weekly', 'bi-weekly']"
+                                readonly="state != 'draft'"
                             />
                             <newline />
                             <field
                                 name="payment_weekday"
-                                attrs="{
-                                'invisible': [('schedule_pay', 'not in', ['weekly', 'bi-weekly'])],
-                                'required': [('schedule_pay', 'in', ['weekly', 'bi-weekly'])],
-                            }"
+                                invisible="schedule_pay not in ['weekly', 'bi-weekly']"
+                                required="schedule_pay in ['weekly', 'bi-weekly']"
+                                readonly="state != 'draft'"
                             />
                             <field
                                 name="payment_week"
-                                attrs="{
-                                'invisible': [('schedule_pay', 'not in', ['weekly', 'bi-weekly'])],
-                                'required': [('schedule_pay', 'in', ['weekly', 'bi-weekly'])],
-                            }"
+                                invisible="schedule_pay not in ['weekly', 'bi-weekly']"
+                                required="schedule_pay in ['weekly', 'bi-weekly']"
+                                readonly="state != 'draft'"
                             />
                         </group>
                     </group>
-                    <field colspan="4" name="period_ids" nolabel="1" />
+                    <field
+                        colspan="4"
+                        name="period_ids"
+                        nolabel="1"
+                        readonly="state != 'draft'"
+                    />
                 </sheet>
             </form>
         </field>

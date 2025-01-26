@@ -11,20 +11,13 @@
                     name="hr_period_id"
                     domain="[
                         ('state', '=', 'open'),
-                    ]"
-                    groups="!base.group_multi_company"
-                />
-                <field
-                    name="hr_period_id"
-                    domain="[
-                        ('state', '=', 'open'),
                         ('company_id', '=', company_id)
                     ]"
-                    groups="base.group_multi_company"
+                    readonly="state != 'draft'"
                 />
             </field>
             <field name="name" position="after">
-                <field name="date_payment" required="1" />
+                <field name="date_payment" required="1" readonly="state != 'draft'" />
             </field>
         </field>
     </record>

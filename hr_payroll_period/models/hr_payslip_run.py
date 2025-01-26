@@ -12,26 +12,11 @@ class HrPayslipRun(models.Model):
     _inherit = "hr.payslip.run"
 
     name = fields.Char(
-        required=True,
-        readonly=True,
-        states={"draft": [("readonly", False)]},
         default=lambda obj: obj.env["ir.sequence"].next_by_code("hr.payslip.run"),
     )
-    company_id = fields.Many2one(
-        "res.company",
-        "Company",
-        states={"close": [("readonly", True)]},
-        default=lambda obj: obj.env.company,
-    )
-    hr_period_id = fields.Many2one(
-        "hr.period", string="Period", states={"close": [("readonly", True)]}
-    )
-    date_payment = fields.Date(
-        "Date of Payment", states={"close": [("readonly", True)]}
-    )
-    schedule_pay = fields.Selection(
-        get_schedules, states={"close": [("readonly", True)]}
-    )
+    hr_period_id = fields.Many2one("hr.period", string="Period")
+    date_payment = fields.Date("Date of Payment")
+    schedule_pay = fields.Selection(get_schedules)
 
     @api.constrains("hr_period_id", "company_id")
     def _check_period_company(self):
@@ -95,7 +80,7 @@ class HrPayslipRun(models.Model):
         """
         if vals.get("date_end") and not vals.get("date_payment"):
             vals.update({"date_payment": vals["date_end"]})
-        return super(HrPayslipRun, self).create(vals)
+        return super().create(vals)
 
     def get_payslip_employees_wizard(self):
         """Replace the static action used to call the wizard"""
@@ -134,12 +119,12 @@ class HrPayslipRun(models.Model):
                     % run.name
                 )
         self.update_periods()
-        return super(HrPayslipRun, self).close_payslip_run()
+        return super().close_payslip_run()
 
     def draft_payslip_run(self):
         for run in self:
             run.hr_period_id.button_re_open()
-        return super(HrPayslipRun, self).draft_payslip_run()
+        return super().draft_payslip_run()
 
     def update_periods(self):
         self.ensure_one()
