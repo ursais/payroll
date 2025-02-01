@@ -10,8 +10,8 @@ class HrPayslipRun(models.Model):
     journal_id = fields.Many2one(
         "account.journal",
         "Salary Journal",
+        related="struct_id.journal_id",
         required=True,
-        default=lambda self: self.env["account.journal"].search(
-            [("type", "=", "general")], limit=1
-        ),
+        readonly=False,
+        store=True,
     )

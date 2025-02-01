@@ -11,7 +11,20 @@ logger = logging.getLogger(__name__)
 class HrPayslip(models.Model):
     _inherit = "hr.payslip"
 
-    journal_id = fields.Many2one(related="contract_id.journal_id", store=True)
+    @api.depends("payslip_run_id", "struct_id")
+    def _compute_journal_id(self):
+        for payslip in self:
+            payslip.journal_id = (
+                payslip.payslip_run_id.journal_id or payslip.struct_id.journal_id
+            )
+
+    journal_id = fields.Many2one(
+        "account.journal",
+        compute="_compute_journal_id",
+        check_company=True,
+        store=True,
+        readonly=False,
+    )
     date = fields.Date(
         "Date Account",
         help="Keep empty to use the period of the validation(Payslip) date.",
@@ -19,16 +32,6 @@ class HrPayslip(models.Model):
     move_id = fields.Many2one(
         "account.move", "Accounting Entry", readonly=True, copy=False
     )
-
-    @api.onchange("contract_id")
-    def onchange_contract(self):
-        res = super().onchange_contract()
-        self.journal_id = (
-            self.contract_id.journal_id.id
-            or (not self.contract_id and self.default_get(["journal_id"])["journal_id"])
-            or self.journal_id
-        )
-        return res
 
     def action_payslip_cancel(self):
         for payslip in self:
