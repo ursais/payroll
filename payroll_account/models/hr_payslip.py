@@ -205,46 +205,11 @@ class HrPayslip(models.Model):
         }
 
     def _get_tax_details(self, line):
-        tax_ids = False
-        tax_tag_ids = []
-        salary_rule = line.salary_rule_id
-        if salary_rule.tax_line_ids:
-            account_tax_ids = [
-                salary_rule_id.account_tax_id.id
-                for salary_rule_id in salary_rule.tax_line_ids
-            ]
-            tax_ids = [(4, account_tax_id, 0) for account_tax_id in account_tax_ids]
-            TaxRepLine = self.env["account.tax.repartition.line"]
-            tax_tag_ids = TaxRepLine.search(
-                [
-                    ("invoice_tax_id", "in", account_tax_ids),
-                    ("repartition_type", "=", "base"),
-                ]
-            ).tag_ids
+        tax = line.salary_rule_id.account_tax_id
+        tax_ids = [(4, tax.id, 0)]
 
-        tax_repartition_line_id = False
-        if salary_rule.account_tax_id:
-            TaxRepLine = self.env["account.tax.repartition.line"]
-            tax_repartition_line_id = TaxRepLine.search(
-                [
-                    ("invoice_tax_id", "=", salary_rule.account_tax_id.id),
-                    (
-                        "account_id",
-                        "=",
-                        salary_rule.account_debit.id or salary_rule.account_credit.id,
-                    ),
-                ]
-            ).id
-            tax_tag_ids += TaxRepLine.search(
-                [
-                    ("invoice_tax_id", "=", salary_rule.account_tax_id.id),
-                    ("repartition_type", "=", "tax"),
-                    (
-                        "account_id",
-                        "=",
-                        salary_rule.account_debit.id or salary_rule.account_credit.id,
-                    ),
-                ]
-            ).tag_ids
+        tax_repart_lines = tax.invoice_repartition_line_ids
+        tags = tax_repart_lines.tag_ids
+        tax_tag_ids = [(4, tag.id, 0) for tag in tags]
 
-        return tax_ids, tax_tag_ids or False, tax_repartition_line_id
+        return tax_ids, tax_tag_ids, None

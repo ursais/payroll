@@ -21,5 +21,3 @@ class HrSalaryRule(models.Model):
         domain=[("deprecated", "=", False)],
         company_dependent=True,
     )
-    tax_base_id = fields.Many2one("hr.salary.rule", "Base")
-    tax_line_ids = fields.One2many("hr.salary.rule", "tax_base_id", string="Tax lines")
