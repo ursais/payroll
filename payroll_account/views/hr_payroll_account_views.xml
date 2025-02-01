@@ -50,7 +50,6 @@
                         name="analytic_account_id"
                         groups="analytic.group_analytic_accounting"
                     />
-                    <field name="journal_id" />
                 </group>
             </xpath>
         </field>
@@ -83,6 +82,15 @@
         <field name="arch" type="xml">
             <field name="credit_note" position="before">
                 <field name="journal_id" readonly="state != 'draft'" />
+            </field>
+        </field>
+    </record>
+    <record id="hr_payroll_structure_view_form" model="ir.ui.view">
+        <field name="model">hr.payroll.structure</field>
+        <field name="inherit_id" ref="payroll.hr_payroll_structure_view_form" />
+        <field name="arch" type="xml">
+            <field name="parent_id" position="after">
+                <field name="journal_id" />
             </field>
         </field>
     </record>

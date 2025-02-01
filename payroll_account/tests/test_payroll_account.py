@@ -76,6 +76,7 @@ class TestPayrollAccount(common.TransactionCase):
                 "name": "Salary Structure for Software Developer",
                 "code": "SD",
                 "parent_id": self.ref("payroll.structure_base"),
+                "journal_id": self.account_journal.id,
                 "rule_ids": [(6, 0, rules)],
             }
         )
@@ -88,7 +89,6 @@ class TestPayrollAccount(common.TransactionCase):
                 "wage": 5000.0,
                 "employee_id": self.hr_employee_john.id,
                 "struct_id": self.hr_structure_softwaredeveloper.id,
-                "journal_id": self.account_journal.id,
             }
         )
 
