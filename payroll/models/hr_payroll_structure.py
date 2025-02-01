@@ -21,13 +21,7 @@ class HrPayrollStructure(models.Model):
 
     name = fields.Char(required=True)
     code = fields.Char(string="Reference")
-    company_id = fields.Many2one(
-        "res.company",
-        string="Company",
-        required=True,
-        copy=False,
-        default=lambda self: self.env.company,
-    )
+    company_id = fields.Many2one("res.company")
     note = fields.Text(string="Description")
     parent_id = fields.Many2one(
         "hr.payroll.structure", string="Parent", default=_get_parent
