@@ -141,7 +141,7 @@ class HrPayslip(models.Model):
     def _prepare_debit_line(
         self, line, amount, date, debit_account_id, move_line_analytic_ids
     ):
-        tax_ids, tax_tag_ids, tax_repartition_line_id = self._get_tax_details(line)
+        tax_vals, tax_tag_vals, tax_repart_line_id = self._get_tax_details(line)
         return {
             "name": line.name,
             "partner_id": line._get_partner_id(credit_account=False),
@@ -151,16 +151,15 @@ class HrPayslip(models.Model):
             "debit": amount > 0.0 and amount or 0.0,
             "credit": amount < 0.0 and -amount or 0.0,
             "analytic_distribution": move_line_analytic_ids,
-            "tax_line_id": line.salary_rule_id.account_tax_id.id,
-            "tax_ids": tax_ids,
-            "tax_repartition_line_id": tax_repartition_line_id,
-            "tax_tag_ids": tax_tag_ids,
+            "tax_ids": tax_vals,
+            "tax_tag_ids": tax_tag_vals,
+            "tax_repartition_line_id": tax_repart_line_id,
         }
 
     def _prepare_credit_line(
         self, line, amount, date, credit_account_id, move_line_analytic_ids
     ):
-        tax_ids, tax_tag_ids, tax_repartition_line_id = self._get_tax_details(line)
+        tax_vals, tax_tag_vals, tax_repart_line_id = self._get_tax_details(line)
         return {
             "name": line.name,
             "partner_id": line._get_partner_id(credit_account=True),
@@ -170,10 +169,9 @@ class HrPayslip(models.Model):
             "debit": amount < 0.0 and -amount or 0.0,
             "credit": amount > 0.0 and amount or 0.0,
             "analytic_distribution": move_line_analytic_ids,
-            "tax_line_id": line.salary_rule_id.account_tax_id.id,
-            "tax_ids": tax_ids,
-            "tax_repartition_line_id": tax_repartition_line_id,
-            "tax_tag_ids": tax_tag_ids,
+            "tax_ids": tax_vals,
+            "tax_tag_ids": tax_tag_vals,
+            "tax_repartition_line_id": tax_repart_line_id,
         }
 
     def _prepare_adjust_credit_line(
@@ -205,11 +203,27 @@ class HrPayslip(models.Model):
         }
 
     def _get_tax_details(self, line):
-        tax = line.salary_rule_id.account_tax_id
-        tax_ids = [(4, tax.id, 0)]
+        # Single Tax configurable on the Salary Rule
+        # If a Journal Item is created, it will be set
+        # The repartition type is used to select the tags added to the JI
+        # If no journal item, these fields can be used for reports
+        tax_vals, tax_tag_vals, tax_repart_line_id = None, None, None
+        rule = line.salary_rule_id
+        tax = rule.account_tax_id
+        if tax:
+            tax_vals = [(4, tax.id, 0)]
+            repartition = rule.repartition_type
+            all_repart_lines = tax.invoice_repartition_line_ids
+            if repartition == "base":
+                tax_repart_line = all_repart_lines.filtered(
+                    lambda x: x.repartition_type == "base"
+                )[:1]
+            else:
+                tax_repart_line = all_repart_lines.filtered(
+                    lambda x: x.repartition_type == "tax"
+                )[:1]
+            tax_repart_line_id = tax_repart_line.id
+            tags = tax_repart_line.tag_ids
+            tax_tag_vals = [(4, tag.id, 0) for tag in tags] if tags else None
 
-        tax_repart_lines = tax.invoice_repartition_line_ids
-        tags = tax_repart_lines.tag_ids
-        tax_tag_ids = [(4, tag.id, 0) for tag in tags]
-
-        return tax_ids, tax_tag_ids, None
+        return tax_vals, tax_tag_vals, tax_repart_line_id
