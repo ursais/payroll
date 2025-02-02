@@ -28,6 +28,7 @@
                                 groups="analytic.group_analytic_accounting"
                             />
                             <field name="account_tax_id" />
+                            <field name="repartition_type" />
                         </group>
                     </group>
                 </page>

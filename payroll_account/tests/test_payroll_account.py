@@ -40,19 +40,60 @@ class TestPayrollAccount(common.TransactionCase):
             }
         )
 
-        self.account_debit = self.env["account.account"].create(
+        # Taxes
+        AccountTag = self.env["account.account.tag"]
+        AccountTax = self.env["account.tax"]
+        # Income Tax
+        self.income_tax = AccountTax.create(
+            {"name": "Income Tax", "type_tax_use": "none"}
+        )
+        self.tax_tag_base = AccountTag.create(
+            {"name": "A101-base", "applicability": "taxes"}
+        )
+        self.tax_tag_tax = AccountTag.create(
+            {"name": "A201-tax", "applicability": "taxes"}
+        )
+        self.income_tax.invoice_repartition_line_ids[0].tag_ids = self.tax_tag_base
+        self.income_tax.invoice_repartition_line_ids[1].tag_ids = self.tax_tag_tax
+        # Social Security
+        self.social_security = AccountTax.create(
+            {"name": "Social Security", "type_tax_use": "none"}
+        )
+        self.ss_tag_base = AccountTag.create(
+            {"name": "S101-base", "applicability": "taxes"}
+        )
+        self.ss_tag_tax = AccountTag.create(
+            {"name": "S201-tax", "applicability": "taxes"}
+        )
+        self.social_security.invoice_repartition_line_ids[0].tag_ids = self.ss_tag_base
+        self.social_security.invoice_repartition_line_ids[1].tag_ids = self.ss_tag_tax
+
+        # Accounts Setup
+        Account = self.env["account.account"]
+        self.account_debit = Account.create(
+            {"name": "Salaries", "code": "630", "account_type": "expense"}
+        )
+        self.account_credit = Account.create(
             {
-                "name": "Debit Account",
-                "code": "334411",
-                "account_type": "expense",
+                "name": "Salaries Payable",
+                "code": "230",
+                "account_type": "liability_current",
                 "reconcile": True,
             }
         )
-        self.account_credit = self.env["account.account"].create(
+        self.account_tax = Account.create(
             {
-                "name": "Credit Account",
-                "code": "114433",
-                "account_type": "expense",
+                "name": "Tax Payable",
+                "code": "231",
+                "account_type": "liability_current",
+                "reconcile": True,
+            }
+        )
+        self.account_ss = Account.create(
+            {
+                "name": "SS Payable",
+                "code": "232",
+                "account_type": "liability_current",
                 "reconcile": True,
             }
         )
@@ -69,6 +110,7 @@ class TestPayrollAccount(common.TransactionCase):
 
         rules = [
             self.ref("payroll.hr_salary_rule_houserentallowance1"),
+            self.ref("payroll.hr_salary_rule_professionaltax1"),
             self.ref("payroll.hr_salary_rule_providentfund1"),
         ]
         self.hr_structure_softwaredeveloper = self.env["hr.payroll.structure"].create(
@@ -92,9 +134,32 @@ class TestPayrollAccount(common.TransactionCase):
             }
         )
 
-    def _update_account_in_rule(self, debit, credit):
-        rule_HRA = self.env.ref("payroll.hr_salary_rule_houserentallowance1")
-        rule_HRA.write({"account_debit": debit, "account_credit": credit})
+    def _update_account_in_rule(self):
+        self.rule_basic = self.env.ref("payroll.hr_rule_basic")
+        self.rule_basic.write({"account_debit": self.account_debit.id})
+
+        self.hr_rule_net = self.env.ref("payroll.hr_rule_net")
+        self.hr_rule_net.write({"account_credit": self.account_credit.id})
+
+        self.rule_tax = self.env.ref("payroll.hr_salary_rule_professionaltax1")
+        self.rule_tax.write(
+            {
+                "account_credit": self.account_tax.id,
+                "account_tax_id": self.income_tax.id,
+                "repartition_type": "tax",
+            }
+        )
+
+        self.rule_social_security = self.env.ref(
+            "payroll.hr_salary_rule_providentfund1"
+        )
+        self.rule_social_security.write(
+            {
+                "account_credit": self.account_ss.id,
+                "account_tax_id": self.social_security.id,
+                "repartition_type": "tax",
+            }
+        )
 
     def _prepare_payslip(self, employee):
         date_from = datetime.now()
@@ -110,21 +175,18 @@ class TestPayrollAccount(common.TransactionCase):
         )
         res = self.hr_payslip.get_payslip_vals(date_from, date_to, employee.id)
         vals = {
-            "struct_id": res["value"]["struct_id"],
-            "contract_id": res["value"]["contract_id"],
             "name": res["value"]["name"],
+            "worked_days_line_ids": [
+                (0, 0, i) for i in res["value"]["worked_days_line_ids"]
+            ],
+            "input_line_ids": [(0, 0, i) for i in res["value"]["input_line_ids"]],
         }
-        vals["worked_days_line_ids"] = [
-            (0, 0, i) for i in res["value"]["worked_days_line_ids"]
-        ]
-        vals["input_line_ids"] = [(0, 0, i) for i in res["value"]["input_line_ids"]]
-        vals.update({"contract_id": self.hr_contract_john.id})
         self.hr_payslip.write(vals)
         return self.hr_payslip
 
     def test_00_hr_payslip(self):
         """checking the process of payslip."""
-        self._update_account_in_rule(self.account_debit, self.account_credit)
+        self._update_account_in_rule()
         self._prepare_payslip(self.hr_employee_john)
 
         # I assign the amount to Input data.
@@ -161,6 +223,21 @@ class TestPayrollAccount(common.TransactionCase):
 
         # I verify that the payslip is in done state.
         self.assertEqual(self.hr_payslip.state, "done", "State not changed!")
+
+        # Check Tax line has Tax and Tags set
+        lines = self.hr_payslip.move_id.line_ids
+        tax_line = lines.filtered(lambda x: x.account_id == self.account_tax)
+        ss_line = lines.filtered(lambda x: x.account_id == self.account_ss)
+        self.assertEqual(
+            tax_line.tax_tag_ids,
+            self.tax_tag_tax,
+            "Income Tax Journal Item should have Tax Tags",
+        )
+        self.assertEqual(
+            ss_line.tax_tag_ids,
+            self.ss_tag_tax,
+            "Social Security Journal Item should have Tax Tags",
+        )
 
     def test_hr_payslip_no_accounts(self):
         self._prepare_payslip(self.hr_employee_john)
