@@ -404,13 +404,8 @@ class HrPayslip(models.Model):
         structure_ids = contracts.get_all_structures()
         if current_structure:
             structure_ids = list(set(current_structure._get_parent_structure().ids))
-        rule_ids = (
-            self.env["hr.payroll.structure"].browse(structure_ids).get_all_rules()
-        )
-        sorted_rule_ids = [id for id, sequence in sorted(rule_ids, key=lambda x: x[1])]
-        payslip_inputs = (
-            self.env["hr.salary.rule"].browse(sorted_rule_ids).mapped("input_ids")
-        )
+        rules = self.env["hr.payroll.structure"].browse(structure_ids).get_all_rules()
+        payslip_inputs = rules.input_ids
         for contract in contracts:
             for payslip_input in payslip_inputs:
                 res.append(
@@ -508,21 +503,15 @@ class HrPayslip(models.Model):
         return localdict
 
     def _get_salary_rules(self):
-        rule_obj = self.env["hr.salary.rule"]
-        sorted_rules = rule_obj
+        Structure = self.env["hr.payroll.structure"]
+        sorted_rules = self.env["hr.salary.rule"]
         for payslip in self:
             contracts = payslip._get_employee_contracts()
             if len(contracts) == 1 and payslip.struct_id:
                 structure_ids = list(set(payslip.struct_id._get_parent_structure().ids))
             else:
                 structure_ids = contracts.get_all_structures()
-            rule_ids = (
-                self.env["hr.payroll.structure"].browse(structure_ids).get_all_rules()
-            )
-            sorted_rule_ids = [
-                id for id, sequence in sorted(rule_ids, key=lambda x: x[1])
-            ]
-            sorted_rules |= rule_obj.browse(sorted_rule_ids)
+            sorted_rules |= Structure.browse(structure_ids).get_all_rules()
         return sorted_rules
 
     def _compute_payslip_line(self, rule, localdict, lines_dict):

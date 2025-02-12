@@ -64,13 +64,9 @@ class HrPayrollStructure(models.Model):
 
     def get_all_rules(self):
         """
-        @return: returns a list of tuple (id, sequence) of rules that are maybe
-                 to apply
+        @return: recordset with all struct rules, in dependecy reverse order
         """
-        all_rules = []
-        for struct in self:
-            all_rules += struct.rule_ids._recursive_search_of_rules()
-        return all_rules
+        return self.rule_ids._recursive_search_of_rules()
 
     def _get_parent_structure(self):
         parent = self.mapped("parent_id")

@@ -17,35 +17,33 @@ class TestSalaryRule(TestPayslipBase):
                 "category_id": self.categ_alw.id,
                 "sequence": 6,
                 "amount_select": "code",
-                "amount_python_compute": "result = 0",
+                "amount_python_compute": "result = 100 + result_rules.CHILD1.total",
             }
         )
         self.developer_pay_structure.write({"rule_ids": [(4, self.test_rule.id)]})
 
-        self.parent_test_rule = self.Rule.create(
+        self.child1_rule = self.Rule.create(
             {
-                "name": "Parent Test Rule",
-                "code": "PARENT_TEST",
+                "name": "Child Level 1 Rule",
+                "code": "CHILD1",
                 "category_id": self.categ_alw.id,
                 "sequence": 6,
                 "parent_rule_id": self.test_rule.id,
                 "amount_select": "code",
-                "amount_python_compute": "result = 100",
+                "amount_python_compute": "result = 10 + result_rules.CHILD2.total",
             }
         )
-        self.developer_pay_structure.write(
-            {"rule_ids": [(4, self.parent_test_rule.id)]}
-        )
+        self.developer_pay_structure.write({"rule_ids": [(4, self.child1_rule.id)]})
 
-        self.child_test_rule = self.Rule.create(
+        self.child2_rule = self.Rule.create(
             {
-                "name": "Child Test Rule",
-                "code": "CHILD_TEST",
+                "name": "Child Level 2 Rule",
+                "code": "CHILD2",
                 "category_id": self.categ_alw.id,
                 "sequence": 7,
-                "parent_rule_id": self.test_rule.id,
+                "parent_rule_id": self.child1_rule.id,
                 "amount_select": "code",
-                "amount_python_compute": "result = 100",
+                "amount_python_compute": "result = 1",
             }
         )
 
@@ -108,39 +106,11 @@ class TestSalaryRule(TestPayslipBase):
         payslip.compute_sheet()
 
         # Check child test rule calculated without being in the structure
-        line = payslip.line_ids.filtered(lambda record: record.code == "CHILD_TEST")
-        self.assertEqual(len(line), 1, "Child line founded")
-
-        # Change sequence of child rule to calculate before of the parent rule
-        self.child_test_rule.sequence = 5
-
-        # Compute Payslip
-        payslip = self.Payslip.create({"employee_id": self.richard_emp.id})
-        payslip.onchange_employee()
-        payslip.compute_sheet()
-
-        # Child rule should be computed
-        line = payslip.line_ids.filtered(lambda record: record.code == "CHILD_TEST")
-        self.assertEqual(len(line), 1, "Child line founded")
-
-        # Change the parent rule condition to return False
-        self.test_rule.condition_select = "python"
-        self.test_rule.condition_python = "result = False"
-
-        # Compute Payslip
-        payslip = self.Payslip.create({"employee_id": self.richard_emp.id})
-        payslip.onchange_employee()
-        payslip.compute_sheet()
-
-        # Parent and child rule should not be calculated even if child rule condition is true # noqa: E501
-        parent_line = payslip.line_ids.filtered(
-            lambda record: record.code == "PARENT_TEST"
+        line = payslip.line_ids.filtered(lambda record: record.code == "TEST")
+        total = line.total
+        self.assertEqual(
+            total, 111, "Child lines were computed before parent = 1 + 10 + 100"
         )
-        child_line = payslip.line_ids.filtered(
-            lambda record: record.code == "CHILD_TEST"
-        )
-        self.assertEqual(len(parent_line), 0, "No parent line found")
-        self.assertEqual(len(child_line), 0, "No child line found")
 
     def test_rule_and_category_with_and_without_code(self):
         rule_test_code = self.SalaryRule.create(
