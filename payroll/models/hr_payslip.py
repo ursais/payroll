@@ -396,25 +396,26 @@ class HrPayslip(models.Model):
         # Will be removed in next versions.
         """
         Inputs computation.
-        @returns: Returns a dict with the inputs that are fetched from the salary_structure
-        associated rules for the given contracts.
-        """  # noqa: E501
+        @returns: Returns a dict with the inputs that are fetched
+        from the salary_structure associated rules for the given contracts.
+        """
         res = []
         current_structure = self.struct_id
-        structure_ids = contracts.get_all_structures()
         if current_structure:
-            structure_ids = list(set(current_structure._get_parent_structure().ids))
-        rules = self.env["hr.payroll.structure"].browse(structure_ids).get_all_rules()
-        payslip_inputs = rules.input_ids
-        for contract in contracts:
-            for payslip_input in payslip_inputs:
-                res.append(
-                    {
-                        "name": payslip_input.name,
-                        "code": payslip_input.code,
-                        "contract_id": contract.id,
-                    }
-                )
+            structures = current_structure._get_parent_structure()
+        else:
+            # TODO: delete? why would we not have a current structure?
+            structures = contracts.get_all_structures()
+        rules = structures.get_all_rules()
+        res = [
+            {
+                "name": payslip_input.name,
+                "code": payslip_input.code,
+                "contract_id": contract.id,
+            }
+            for payslip_input in rules.input_ids
+            for contract in contracts
+        ]
         return res
 
     def _init_payroll_dict_contracts(self):
@@ -502,18 +503,6 @@ class HrPayslip(models.Model):
         }
         return localdict
 
-    def _get_salary_rules(self):
-        Structure = self.env["hr.payroll.structure"]
-        sorted_rules = self.env["hr.salary.rule"]
-        for payslip in self:
-            contracts = payslip._get_employee_contracts()
-            if len(contracts) == 1 and payslip.struct_id:
-                structure_ids = list(set(payslip.struct_id._get_parent_structure().ids))
-            else:
-                structure_ids = contracts.get_all_structures()
-            sorted_rules |= Structure.browse(structure_ids).get_all_rules()
-        return sorted_rules
-
     def _compute_payslip_line(self, rule, localdict, lines_dict):
         self.ensure_one()
         # check if there is already a rule computed with that code
@@ -593,7 +582,8 @@ class HrPayslip(models.Model):
                     contract=contract,
                     payslip=payslip,
                 )
-                for rule in payslip._get_salary_rules():
+                sorted_rules = payslip.struct_id.get_all_rules()
+                for rule in sorted_rules:
                     localdict = rule._reset_localdict_values(localdict)
                     # check if the rule can be applied
                     if rule._satisfy_condition(localdict) and rule.id not in blacklist:
@@ -685,6 +675,8 @@ class HrPayslip(models.Model):
         return localdict
 
     def _get_employee_contracts(self):
+        # TODO: simplify making contract_id required on payslip
+        # you should explicitly create a paysplip for each active contract
         contracts = self.env["hr.contract"]
         for payslip in self:
             if payslip.contract_id.ids:

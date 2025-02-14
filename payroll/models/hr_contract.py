@@ -34,12 +34,8 @@ class HrContract(models.Model):
 
     def get_all_structures(self):
         """
-        @return: the structures linked to the given contracts, ordered by
+        @return: recordset of structures linked to the given contracts, ordered by
                  hierachy (parent=False first, then first level children and
                  so on) and without duplicates
         """
-        structures = self.mapped("struct_id")
-        if not structures:
-            return []
-        # YTI TODO return browse records
-        return list(set(structures._get_parent_structure().ids))
+        return self.struct_id._get_parent_structure()

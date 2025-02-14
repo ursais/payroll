@@ -62,14 +62,29 @@ class HrPayrollStructure(models.Model):
         default = dict(default or {}, code=_("%s (copy)") % self.code)
         return super().copy(default)
 
+    def _get_parent_structure(self):
+        """
+        Returns recordset of salary structures and their parents,
+        ordered by hierarchy, parents first
+        """
+        if not self:
+            return self.env["hr.payroll.structure"]
+        else:
+            return self.parent_id._get_parent_structure() | self
+
     def get_all_rules(self):
         """
-        @return: recordset with all struct rules, in dependecy reverse order
-        """
-        return self.rule_ids._recursive_search_of_rules()
+        Returns a recordset of all rules for the struture and parents,
+        in proper calculation order:
 
-    def _get_parent_structure(self):
-        parent = self.mapped("parent_id")
-        if parent:
-            parent = parent._get_parent_structure()
-        return parent + self
+        1. By sequence of parent Rules, regardless of the Structure they belong to.
+           The Structure parent/child levels are not relevant.
+        2. For each rule, the child rules preceed the parent rule.
+
+        @return: ordered recordset of Salary Rule
+        """
+        structures = self._get_parent_structure()
+        sorted_rules = self.env["hr.salary.rule"]
+        for rule in structures.rule_ids:
+            sorted_rules |= rule._recursive_search_of_rules()
+        return sorted_rules
